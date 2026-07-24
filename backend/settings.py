@@ -156,7 +156,7 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 
 SIMPLE_JWT = {
     # El Access Token es el que viaja en cada petición (Header Authorization)
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), 
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120), 
 
     # Refresh Token de la cookie. Es el que permite generar nuevos Access Tokens sin pedir login.
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30), 

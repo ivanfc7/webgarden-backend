@@ -1,3 +1,4 @@
+import traceback
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -56,36 +57,50 @@ def magic_link(request):
         print(f"Error crítico en Resend: {e}")
         return Response({"error": "Correo no fue enviado"}, status=status.HTTP_400_BAD_REQUEST)
         raise
-
 @api_view(["GET"])
 def verify_magic(request):
-    token = request.GET.get("token")
-    email = verify_magic_token(token)
+    try:
+        token = request.GET.get("token")
+        print(f"--- TOKEN RECIBIDO: {token} ---")
+        
+        # Validamos el token
+        email = verify_magic_token(token)
 
-    if not email:
-        return Response(
-            {"error": "Token inválido o expirado"},
-            status=status.HTTP_400_BAD_REQUEST
+        if not email:
+            print("--- ALERTA: verify_magic_token devolvió None (Token inválido o expirado) ---")
+            return Response(
+                {"error": "Token inválido o expirado"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Buscamos o creamos al usuario
+        user, created = User.objects.get_or_create(
+            username=email,
+            defaults={"email": email}
         )
 
-    # Buscamos al usuario. 
-    user, created = User.objects.get_or_create(
-        username=email,
-        defaults={"email": email}
-    )
+        refresh = RefreshToken.for_user(user)
+        response = JsonResponse({
+            "access": str(refresh.access_token),
+            "is_new_user": created
+        })
 
-    refresh = RefreshToken.for_user(user)
-    response = JsonResponse({
-        "access": str(refresh.access_token),
-        "is_new_user": created
-    })
+        # Configuración de Cookie (Atención con secure/samesite para producción)
+        response.set_cookie(
+            key="refresh_token",
+            value=str(refresh),
+            httponly=True,
+            secure=True,    # CAMBIADO A True: Vercel y Render usan HTTPS en producción
+            samesite="None", # CAMBIADO A None: Necesario para peticiones Cross-Site (Vercel <-> Render)
+            max_age=60 * 60 * 24 * 30
+        )
+        return response
 
-    response.set_cookie(
-        key="refresh_token",
-        value=str(refresh),
-        httponly=True,
-        secure=False,  
-        samesite="Lax",
-        max_age=60 * 60 * 24 * 30
-    )
-    return response
+    except Exception as e:
+        print("--- EXCEPCIÓN DETECTADA EN VERIFY_MAGIC ---")
+        traceback.print_exc()  # Esto imprimirá el error real con número de línea en Render
+        print("-------------------------------------------")
+        return Response(
+            {"error": f"Error interno en el servidor: {str(e)}"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
