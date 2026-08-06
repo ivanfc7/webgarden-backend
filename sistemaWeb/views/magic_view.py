@@ -54,8 +54,13 @@ def magic_link(request):
         print('enviando '+email_output)
         return Response({"success": "Correo enviado"}, status=status.HTTP_200_OK)
     except Exception as e:
-        print(f"Error crítico en Resend: {e}")
-        return Response({"error": "Correo no fue enviado"}, status=status.HTTP_400_BAD_REQUEST)
+        print("=== DETALLE DEL ERROR EN RESEND ===")
+        traceback.print_exc()
+        print("===================================")
+        return Response(
+            {"error": f"Error de Resend: {str(e)}"}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
         raise
     
 @api_view(["GET"])
