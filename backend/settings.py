@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-r#4nee1d%2%iyu(9em2jbh7^5c+-)7h+@x5hd1h3k*t_)tum=z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['sistema-web-educativo-plantas-y-arboles-ntfs.onrender.com', '.onrender.com']
+ALLOWED_HOSTS = ['webgarden-backend.onrender.com', '.onrender.com']
 
 
 # Application definition
@@ -127,6 +127,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Configuración recomendada para WhiteNoise (para servir estáticos en producción)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -134,7 +138,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:5173', 'https://sistema-web-educativo-plantas-arbol.vercel.app'
+    'http://127.0.0.1:5173', 'https://webgarden.vercel.app'
 ]
 CORS_ALLOW_CREDENTIALS = True
 

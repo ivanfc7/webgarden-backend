@@ -33,7 +33,7 @@ def magic_link(request):
         user.save()
 
     token = generar_magic_token(email)
-    link = f"https://sistema-web-educativo-plantas-arbol.vercel.app/verify-magic/{token}"
+    link = f"https://webgarden.vercel.app/verify-magic/{token}"
     resend.api_key = settings.RESEND_API_KEY
 
     try:
@@ -57,6 +57,7 @@ def magic_link(request):
         print(f"Error crítico en Resend: {e}")
         return Response({"error": "Correo no fue enviado"}, status=status.HTTP_400_BAD_REQUEST)
         raise
+    
 @api_view(["GET"])
 def verify_magic(request):
     try:
