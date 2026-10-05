@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-r#4nee1d%2%iyu(9em2jbh7^5c+-)7h+@x5hd1h3k*t_)tum=z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['webgarden-backend.onrender.com', '.onrender.com']
+ALLOWED_HOSTS = ['webgarden-backend.onrender.com', '.onrender.com', '127.0.0.1']
 
 
 # Application definition
@@ -142,6 +142,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
+# Archivos multimedia 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -150,13 +151,9 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Configurar servidor de correo
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-# EMAIL_HOST = env.str("EMAIL_HOST")
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
-# EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
+BREVO_API_KEY = env.str("BREVO_API_KEY")
+BREVO_SENDER_EMAIL = env.str("BREVO_SENDER_EMAIL")
+BREVO_SENDER_NAME = env.str("BREVO_SENDER_NAME", "Mi Jardín")
 
 SIMPLE_JWT = {
     # El Access Token es el que viaja en cada petición (Header Authorization)
