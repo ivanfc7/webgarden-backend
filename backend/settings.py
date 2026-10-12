@@ -80,17 +80,36 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+# Inicializar django-environ
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Configurar servidor de correo
+BREVO_API_KEY = env.str("BREVO_API_KEY")
+BREVO_SENDER_EMAIL = env.str("BREVO_SENDER_EMAIL")
+BREVO_SENDER_NAME = env.str("BREVO_SENDER_NAME", "Mi Jardín")
+# Configurar BD remota
+TURSO_URL_DATABASE = env.str("TURSO_URL_DATABASE")
+TURSO_API_KEY = env.str("TURSO_API_KEY")
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if TURSO_URL_DATABASE and TURSO_API_KEY:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django_libsql', 
+            'NAME': TURSO_URL_DATABASE,
+            'AUTH_TOKEN': TURSO_API_KEY,
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -145,15 +164,6 @@ CORS_ALLOW_CREDENTIALS = True
 # Archivos multimedia 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Inicializar django-environ
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
-# Configurar servidor de correo
-BREVO_API_KEY = env.str("BREVO_API_KEY")
-BREVO_SENDER_EMAIL = env.str("BREVO_SENDER_EMAIL")
-BREVO_SENDER_NAME = env.str("BREVO_SENDER_NAME", "Mi Jardín")
 
 SIMPLE_JWT = {
     # El Access Token es el que viaja en cada petición (Header Authorization)
