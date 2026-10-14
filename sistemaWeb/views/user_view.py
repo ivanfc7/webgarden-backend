@@ -46,8 +46,8 @@ def totalPlantas(request):
 def totalAportes(request):
     user = request.user
     total = AporteAmbiental.objects.filter(planta__usuario=user).aggregate(
-        totalOxigeno = Sum('oxigenoTotal')
+        totalCarbono = Sum('carbonoTotal')
     )
     if not total:
         total = [0]
-    return Response({"total":total["totalOxigeno"] or 0}, status=status.HTTP_200_OK)
+    return Response({"total":total["totalCarbono"] or 0}, status=status.HTTP_200_OK)
