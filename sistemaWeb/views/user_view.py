@@ -11,6 +11,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from ..models import Planta, AporteAmbiental
 from django.db.models import Sum
+from django.http import HttpResponse
 
 @api_view(['POST'])
 def register(request):
@@ -51,3 +52,7 @@ def totalAportes(request):
     if not total:
         total = [0]
     return Response({"total":total["totalCarbono"] or 0}, status=status.HTTP_200_OK)
+
+def ping(request):
+    print(request)
+    return HttpResponse("ok", content_type="test/plain")
