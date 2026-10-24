@@ -55,4 +55,4 @@ def totalAportes(request):
 
 def ping(request):
     print(request)
-    return HttpResponse("ok", content_type="test/plain")
+    return HttpResponse("ok", content_type="text/plain")
