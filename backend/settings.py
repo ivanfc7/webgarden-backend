@@ -88,6 +88,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 BREVO_API_KEY = env.str("BREVO_API_KEY")
 BREVO_SENDER_EMAIL = env.str("BREVO_SENDER_EMAIL")
 BREVO_SENDER_NAME = env.str("BREVO_SENDER_NAME", "Mi Jardín")
+
 # Configurar BD remota
 TURSO_URL_DATABASE = env.str("TURSO_URL_DATABASE")
 TURSO_API_KEY = env.str("TURSO_API_KEY")
@@ -170,7 +171,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120), 
 
     # Refresh Token de la cookie. Es el que permite generar nuevos Access Tokens sin pedir login.
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30), 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=90), 
 
     # True para mantener la sesion en 30 dias 
     'ROTATE_REFRESH_TOKENS': False,
