@@ -114,6 +114,9 @@ def register(request):
             )
             aprendizajes_creados.append(apj.pk)
 
+        # FORZAR EL COMMIT EN TURSO / LIBSQL
+        transaction.commit()
+        
         print(f"Mensajes creados correctamente: {len(mensajes_creados)}", flush=True)
         print(f"Aprendizajes creados correctamente: {len(aprendizajes_creados)}", flush=True)
 
