@@ -6,14 +6,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class MensajeVista(viewsets.ModelViewSet):
     serializer_class = MensajeSerializer
-    queryset = MensajeJuego.objects.all()
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        progresoID = self.request.query_params.get('progreso')
-        if progresoID is not None:
-            queryset = queryset.filter(progreso=progresoID)
-        return queryset
-        
+        # Filtra los mensajes asociados al progreso del usuario autenticado
+        return MensajeJuego.objects.filter(progreso__usuario=self.request.user)

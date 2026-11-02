@@ -6,13 +6,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class AprendizajeVista(viewsets.ModelViewSet):
     serializer_class = AprendizajeSerializer
-    queryset = AprendizajeJuego.objects.all()
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        ProgresoID = self.request.query_params.get('progreso')
-        if ProgresoID is not None:
-            queryset = queryset.filter(progreso=ProgresoID)
-        return queryset
+        # Filtra los aprendizajes asociados al progreso del usuario autenticado
+        return AprendizajeJuego.objects.filter(progreso__usuario=self.request.user)
