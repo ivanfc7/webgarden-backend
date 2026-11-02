@@ -83,6 +83,13 @@ def register(request):
             cantidadApzjDesbloqueados=1
         )
 
+        print("========== DIAGNÓSTICO ==========", flush=True)
+        print("PK:", progreso.pk, flush=True)
+        print("Estado adding:", progreso._state.adding, flush=True)
+        print("Base de datos:", progreso._state.db, flush=True)
+        print("Modelo:", progreso.__class__, flush=True)
+        print("=================================", flush=True)
+
         # Crear los tres consejos iniciales
         for consejo in CONSEJOS_INICIALES:
             MensajeJuego.objects.create(
@@ -101,11 +108,6 @@ def register(request):
                 fuente=tema["fuente"],
                 desbloqueado=True
             )
-
-        print("Progreso:", progreso)
-        print("PK:", progreso.pk)
-        print("Estado adding:", progreso._state.adding)
-        print("Base de datos:", progreso._state.db)
 
         return Response({
             'mensaje': 'Usuario creado correctamente',
