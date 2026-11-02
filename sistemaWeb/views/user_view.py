@@ -68,6 +68,7 @@ def login(request):
     )
 
     return response
+
 @api_view(['POST'])
 @transaction.atomic
 def register(request):
@@ -76,16 +77,13 @@ def register(request):
     if nuevoUser.is_valid():
         usuario = nuevoUser.save()
 
-        # 1. Asignar directamente a la variable
+        # 1. Al crearse, su PK será automáticamente igual a usuario.pk
         progreso = ProgresoJuego.objects.create(
             usuario=usuario,
             cantidadMsjDesbloqueados=3,
             cantidadApzjDesbloqueados=1
         )
 
-        print("Progreso PK:", progreso.pk, flush=True)
-
-        print("Progreso usuario ID:", progreso.usuario_id, flush=True)
         print("========== DIAGNÓSTICO ==========", flush=True)
 
         print("PK:", progreso.pk, flush=True)
@@ -97,11 +95,10 @@ def register(request):
         print("Modelo:", progreso.__class__, flush=True)
 
         print("=================================", flush=True)
-
-        # 2. Usar progreso_id para evitar la comprobación en memoria de Django/_state.adding
+        # 2. Asignamos la PK mediante el ID conocido del usuario
         for consejo in CONSEJOS_INICIALES:
             MensajeJuego.objects.create(
-                progreso_id=progreso.pk,
+                progreso_id=usuario.pk,
                 titulo=consejo["titulo"],
                 descripcion=consejo["descripcion"],
                 desbloqueado=True
@@ -109,7 +106,7 @@ def register(request):
 
         for tema in APRENDIZAJES_INICIALES:
             AprendizajeJuego.objects.create(
-                progreso_id=progreso.pk,
+                progreso_id=usuario.pk,
                 titulo=tema["titulo"],
                 contenido=tema["contenido"],
                 imagen=tema["imagen"],
@@ -119,7 +116,7 @@ def register(request):
 
         return Response({
             'mensaje': 'Usuario creado correctamente',
-            'progresoId': progreso.pk,
+            'progresoId': usuario.pk,
             'consejosIniciales': 3,
         }, status=status.HTTP_201_CREATED)
 
