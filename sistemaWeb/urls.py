@@ -3,9 +3,9 @@ from rest_framework import routers
 
 from sistemaWeb.resources.olvidePassword import generar_token, reset_password
 from sistemaWeb.views.user_view import login
-from .views import PlantaVista, ProgresoVista, AporteVista, AprendizajeVista, MensajeVista, MyTokenRefreshView
+from .views import PlantaVista, ProgresoVista, AporteVista, AprendizajeVista, MensajeVista 
 from .resources.buscador_view import buscar_descripcion
-from .views import register, profile, totalPlantas, totalAportes, magic_link, verify_magic, ping
+from .views import register, profile, totalPlantas, totalAportes, ping
 
 router = routers.DefaultRouter()
 router.register(r'planta', PlantaVista)
@@ -21,9 +21,6 @@ urlpatterns = [
     path('api/profile', profile, name='profile'),
     path('api/total-plantas',  totalPlantas,  name='plantasTotales'), 
     path('api/total-aportes', totalAportes, name='totalAportes'),
-    path('api/verificar-token', verify_magic, name='verificarToken'),
-    path('api/generar-link', magic_link, name='generarLink'),
-    path('api/token/refresh/', MyTokenRefreshView.as_view(), name='token_refresh'),
     path('api/generar_token/', generar_token, name='generar_token'),
     path('api/reset_password/<uidb64>/<token>/', reset_password, name='reset_password'),
     path('api/login', login, name='login'),
