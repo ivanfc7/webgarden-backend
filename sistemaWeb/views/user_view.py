@@ -17,6 +17,7 @@ from ..models import ProgresoJuego, MensajeJuego,  AprendizajeJuego
 from ..serializer import UserSerializer
 from django.db import transaction
 from ..resources.datos_iniciales import CONSEJOS_INICIALES, APRENDIZAJES_INICIALES
+from django.db import connection
 
 @api_view(["POST"])
 def login(request):
@@ -68,37 +69,31 @@ def login(request):
     )
 
     return response
-
 @api_view(['POST'])
 def register(request):
     nuevoUser = UserSerializer(data=request.data)
 
     if nuevoUser.is_valid():
-        # 1. Crear el objeto Usuario
+        # 1. Crear usuario mediante el serializer
         usuario = nuevoUser.save()
 
-        # 2. Crear o recuperar el Progreso (get_or_create evita duplicados o fallos en Turso)
-        progreso, created = ProgresoJuego.objects.get_or_create(
-            usuario=usuario,
-            defaults={
-                'cantidadMsjDesbloqueados': 3,
-                'cantidadApzjDesbloqueados': 1
-            }
-        )
+        # 2. Insertar directamente en la tabla de Turso usando SQL puro
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                INSERT INTO sistemaWeb_progresojuego 
+                (usuario_id, cantidadMsjDesbloqueados, cantidadApzjDesbloqueados, experiencia)
+                VALUES (%s, %s, %s, %s)
+                """,
+                [usuario.pk, 3, 1, 0]
+            )
 
-        print("========== DIAGNÓSTICO ==========", flush=True)
-
-        print("PK:", progreso.pk, flush=True)
-
-        print("Estado adding:", progreso._state.adding, flush=True)
-
-        print("Base de datos:", progreso._state.db, flush=True)
-
-        print("Modelo:", progreso.__class__, flush=True)
-
-        print("=================================", flush=True)
-
-        # 3. Crear los consejos
+        # 3. Obtener la instancia de ProgresoJuego ya confirmada en la BD
+        progreso = ProgresoJuego.objects.get(usuario=usuario)
+        print('============VALIDACION============')
+        print(progreso)
+        print('=============================')
+        # 4. Crear los mensajes iniciales
         for consejo in CONSEJOS_INICIALES:
             MensajeJuego.objects.create(
                 progreso=progreso,
@@ -107,7 +102,7 @@ def register(request):
                 desbloqueado=True
             )
 
-        # 4. Crear los aprendizajes
+        # 5. Crear los aprendizajes iniciales
         for tema in APRENDIZAJES_INICIALES:
             AprendizajeJuego.objects.create(
                 progreso=progreso,
@@ -117,7 +112,7 @@ def register(request):
                 fuente=tema["fuente"],
                 desbloqueado=True
             )
-    
+
         return Response({
             'mensaje': 'Usuario y progreso creados correctamente',
             'progresoId': progreso.pk,
