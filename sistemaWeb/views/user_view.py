@@ -102,6 +102,11 @@ def register(request):
                 desbloqueado=True
             )
 
+        print("Progreso:", progreso)
+        print("PK:", progreso.pk)
+        print("Estado adding:", progreso._state.adding)
+        print("Base de datos:", progreso._state.db)
+
         return Response({
             'mensaje': 'Usuario creado correctamente',
             'progresoId': progreso.id,
