@@ -8,15 +8,9 @@ class PlantaSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['usuario']
 
-class ProgresoSerializer(serializers.ModelSerializer):
+class MensajeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProgresoJuego
-        fields = '__all__'
-        read_only_fields = ['usuario']
-
-class AporteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AporteAmbiental
+        model = MensajeJuego
         fields = '__all__'
 
 class AprendizajeSerializer(serializers.ModelSerializer):
@@ -24,9 +18,26 @@ class AprendizajeSerializer(serializers.ModelSerializer):
         model = AprendizajeJuego
         fields = '__all__'
 
-class MensajeSerializer(serializers.ModelSerializer):
+class ProgresoSerializer(serializers.ModelSerializer):
+    # Incluir los serializadores anidados utilizando el related_name correspondiente
+    mensajes = MensajeSerializer(many=True, read_only=True)
+    aprendizajes = AprendizajeSerializer(many=True, read_only=True)
+
     class Meta:
-        model = MensajeJuego
+        model = ProgresoJuego
+        fields = [
+            'usuario',
+            'cantidadMsjDesbloqueados',
+            'cantidadApzjDesbloqueados',
+            'fechaJuego',
+            'experiencia',
+            'mensajes',
+            'aprendizajes'
+        ]
+
+class AporteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AporteAmbiental
         fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
@@ -37,7 +48,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username', 'password', 'email', 'first_name', 'last_name']
 
     def create(self, validated_data):
-        # Esto asegura que la contraseña se guarde hasheada
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],

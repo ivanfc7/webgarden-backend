@@ -74,37 +74,42 @@ def register(request):
     nuevoUser = UserSerializer(data=request.data)
 
     if nuevoUser.is_valid():
-        # 1. Crear usuario
+        # 1. Crear el objeto Usuario
         usuario = nuevoUser.save()
 
-        # 2. Crear progreso asociándolo al usuario
-        progreso = ProgresoJuego.objects.create(
+        # 2. Crear o recuperar el Progreso (get_or_create evita duplicados o fallos en Turso)
+        progreso, created = ProgresoJuego.objects.get_or_create(
             usuario=usuario,
-            cantidadMsjDesbloqueados=3,
-            cantidadApzjDesbloqueados=1
+            defaults={
+                'cantidadMsjDesbloqueados': 3,
+                'cantidadApzjDesbloqueados': 1
+            }
         )
 
         print("========== DIAGNÓSTICO ==========", flush=True)
+
         print("PK:", progreso.pk, flush=True)
+
         print("Estado adding:", progreso._state.adding, flush=True)
+
         print("Base de datos:", progreso._state.db, flush=True)
+
         print("Modelo:", progreso.__class__, flush=True)
+
         print("=================================", flush=True)
-        # 3. Crear los mensajes asignando la instancia 'progreso'
-        mensajes_creados = []
+
+        # 3. Crear los consejos
         for consejo in CONSEJOS_INICIALES:
-            msg = MensajeJuego.objects.create(
+            MensajeJuego.objects.create(
                 progreso=progreso,
                 titulo=consejo["titulo"],
                 descripcion=consejo["descripcion"],
                 desbloqueado=True
             )
-            mensajes_creados.append(msg.pk)
 
-        # 4. Crear los aprendizajes asignando la instancia 'progreso'
-        aprendizajes_creados = []
+        # 4. Crear los aprendizajes
         for tema in APRENDIZAJES_INICIALES:
-            apj = AprendizajeJuego.objects.create(
+            AprendizajeJuego.objects.create(
                 progreso=progreso,
                 titulo=tema["titulo"],
                 contenido=tema["contenido"],
@@ -112,18 +117,11 @@ def register(request):
                 fuente=tema["fuente"],
                 desbloqueado=True
             )
-            aprendizajes_creados.append(apj.pk)
-
-        # FORZAR EL COMMIT EN TURSO / LIBSQL
-        transaction.commit()
-        
-        print(f"Mensajes creados correctamente: {len(mensajes_creados)}", flush=True)
-        print(f"Aprendizajes creados correctamente: {len(aprendizajes_creados)}", flush=True)
-
+    
         return Response({
-            'mensaje': 'Usuario creado correctamente',
+            'mensaje': 'Usuario y progreso creados correctamente',
             'progresoId': progreso.pk,
-            'consejosIniciales': len(mensajes_creados),
+            'consejosIniciales': 3,
         }, status=status.HTTP_201_CREATED)
 
     return Response(
