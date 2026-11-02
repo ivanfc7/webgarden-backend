@@ -77,11 +77,16 @@ def register(request):
     if nuevoUser.is_valid():
         usuario = nuevoUser.save()
 
-        progreso = ProgresoJuego.objects.create(
+        ProgresoJuego.objects.create(
             usuario=usuario,
             cantidadMsjDesbloqueados=3,
             cantidadApzjDesbloqueados=1
         )
+
+        # Recuperar el progreso directamente desde la base de datos
+        progreso = ProgresoJuego.objects.get(usuario=usuario)
+
+        print("PK recuperada:", progreso.pk, flush=True)
 
         print("========== DIAGNÓSTICO ==========", flush=True)
         print("PK:", progreso.pk, flush=True)
