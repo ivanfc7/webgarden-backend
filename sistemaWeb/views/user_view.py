@@ -69,31 +69,26 @@ def login(request):
     )
 
     return response
+
 @api_view(['POST'])
 def register(request):
     nuevoUser = UserSerializer(data=request.data)
 
     if nuevoUser.is_valid():
-        # 1. Crear usuario mediante el serializer
+        # 1. Guardar Usuario
         usuario = nuevoUser.save()
 
-        # 2. Insertar directamente en la tabla de Turso usando SQL puro
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                INSERT INTO sistemaWeb_progresojuego 
-                (usuario_id, cantidadMsjDesbloqueados, cantidadApzjDesbloqueados, experiencia)
-                VALUES (%s, %s, %s, %s)
-                """,
-                [usuario.pk, 3, 1, 0]
-            )
+        # 2. Crear o recuperar ProgresoJuego mediante ORM (garantiza instanciación limpia)
+        progreso, created = ProgresoJuego.objects.get_or_create(
+            usuario=usuario,
+            defaults={
+                'cantidadMsjDesbloqueados': 3,
+                'cantidadApzjDesbloqueados': 1,
+                'experiencia': 0
+            }
+        )
 
-        # 3. Obtener la instancia de ProgresoJuego ya confirmada en la BD
-        progreso = ProgresoJuego.objects.get(usuario=usuario)
-        print('============VALIDACION============')
-        print(progreso)
-        print('=============================')
-        # 4. Crear los mensajes iniciales
+        # 3. Crear los tres consejos iniciales vinculados al objeto progreso
         for consejo in CONSEJOS_INICIALES:
             MensajeJuego.objects.create(
                 progreso=progreso,
@@ -102,7 +97,7 @@ def register(request):
                 desbloqueado=True
             )
 
-        # 5. Crear los aprendizajes iniciales
+        # 4. Crear los aprendizajes iniciales vinculados al objeto progreso
         for tema in APRENDIZAJES_INICIALES:
             AprendizajeJuego.objects.create(
                 progreso=progreso,
@@ -114,7 +109,7 @@ def register(request):
             )
 
         return Response({
-            'mensaje': 'Usuario y progreso creados correctamente',
+            'mensaje': 'Usuario creado correctamente',
             'progresoId': progreso.pk,
             'consejosIniciales': 3,
         }, status=status.HTTP_201_CREATED)
