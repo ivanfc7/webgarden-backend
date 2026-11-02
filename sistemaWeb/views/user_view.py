@@ -68,7 +68,6 @@ def login(request):
     )
 
     return response
-
 @api_view(['POST'])
 @transaction.atomic
 def register(request):
@@ -77,28 +76,32 @@ def register(request):
     if nuevoUser.is_valid():
         usuario = nuevoUser.save()
 
-        ProgresoJuego.objects.create(
+        # 1. Asignar directamente a la variable
+        progreso = ProgresoJuego.objects.create(
             usuario=usuario,
             cantidadMsjDesbloqueados=3,
             cantidadApzjDesbloqueados=1
         )
 
-        # Recuperar el progreso directamente desde la base de datos
-        progreso = ProgresoJuego.objects.get(usuario=usuario)
+        print("Progreso PK:", progreso.pk, flush=True)
 
-        print("PK recuperada:", progreso.pk, flush=True)
-
+        print("Progreso usuario ID:", progreso.usuario_id, flush=True)
         print("========== DIAGNÓSTICO ==========", flush=True)
+
         print("PK:", progreso.pk, flush=True)
+
         print("Estado adding:", progreso._state.adding, flush=True)
+
         print("Base de datos:", progreso._state.db, flush=True)
+
         print("Modelo:", progreso.__class__, flush=True)
+
         print("=================================", flush=True)
 
-        # Crear los tres consejos iniciales
+        # 2. Usar progreso_id para evitar la comprobación en memoria de Django/_state.adding
         for consejo in CONSEJOS_INICIALES:
             MensajeJuego.objects.create(
-                progreso=progreso,
+                progreso_id=progreso.pk,
                 titulo=consejo["titulo"],
                 descripcion=consejo["descripcion"],
                 desbloqueado=True
@@ -106,7 +109,7 @@ def register(request):
 
         for tema in APRENDIZAJES_INICIALES:
             AprendizajeJuego.objects.create(
-                progreso=progreso,
+                progreso_id=progreso.pk,
                 titulo=tema["titulo"],
                 contenido=tema["contenido"],
                 imagen=tema["imagen"],
@@ -116,7 +119,7 @@ def register(request):
 
         return Response({
             'mensaje': 'Usuario creado correctamente',
-            'progresoId': progreso.id,
+            'progresoId': progreso.pk,
             'consejosIniciales': 3,
         }, status=status.HTTP_201_CREATED)
 
