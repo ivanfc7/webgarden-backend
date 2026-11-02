@@ -17,7 +17,6 @@ from ..models import ProgresoJuego, MensajeJuego,  AprendizajeJuego
 from ..serializer import UserSerializer
 from django.db import transaction
 from ..resources.datos_iniciales import CONSEJOS_INICIALES, APRENDIZAJES_INICIALES
-from django.db import connection
 
 @api_view(["POST"])
 def login(request):
@@ -75,10 +74,10 @@ def register(request):
     nuevoUser = UserSerializer(data=request.data)
 
     if nuevoUser.is_valid():
-        # 1. Guardar Usuario
+        # 1. Crear el registro en auth_user
         usuario = nuevoUser.save()
 
-        # 2. Crear o recuperar ProgresoJuego mediante ORM (garantiza instanciación limpia)
+        # 2. Crear o recuperar el ProgresoJuego usando get_or_create (evita conflictos en Turso)
         progreso, created = ProgresoJuego.objects.get_or_create(
             usuario=usuario,
             defaults={
@@ -88,18 +87,21 @@ def register(request):
             }
         )
 
-        # 3. Crear los tres consejos iniciales vinculados al objeto progreso
+        # 3. Crear los mensajes de juego vinculados a la instancia de progreso
+        mensajes_creados = []
         for consejo in CONSEJOS_INICIALES:
-            MensajeJuego.objects.create(
+            msg = MensajeJuego.objects.create(
                 progreso=progreso,
                 titulo=consejo["titulo"],
                 descripcion=consejo["descripcion"],
                 desbloqueado=True
             )
+            mensajes_creados.append(msg.pk)
 
-        # 4. Crear los aprendizajes iniciales vinculados al objeto progreso
+        # 4. Crear los aprendizajes de juego vinculados a la instancia de progreso
+        aprendizajes_creados = []
         for tema in APRENDIZAJES_INICIALES:
-            AprendizajeJuego.objects.create(
+            apj = AprendizajeJuego.objects.create(
                 progreso=progreso,
                 titulo=tema["titulo"],
                 contenido=tema["contenido"],
@@ -107,11 +109,14 @@ def register(request):
                 fuente=tema["fuente"],
                 desbloqueado=True
             )
+            aprendizajes_creados.append(apj.pk)
 
         return Response({
-            'mensaje': 'Usuario creado correctamente',
+            'mensaje': 'Usuario y progreso creados correctamente',
             'progresoId': progreso.pk,
-            'consejosIniciales': 3,
+            'userId': usuario.pk,
+            'consejosIniciales': len(mensajes_creados),
+            'aprendizajesIniciales': len(aprendizajes_creados),
         }, status=status.HTTP_201_CREATED)
 
     return Response(
