@@ -70,14 +70,14 @@ def login(request):
     return response
 
 @api_view(['POST'])
-@transaction.atomic
 def register(request):
     nuevoUser = UserSerializer(data=request.data)
 
     if nuevoUser.is_valid():
+        # 1. Crear usuario
         usuario = nuevoUser.save()
 
-        # 1. Al crearse, su PK será automáticamente igual a usuario.pk
+        # 2. Crear progreso asociándolo al usuario
         progreso = ProgresoJuego.objects.create(
             usuario=usuario,
             cantidadMsjDesbloqueados=3,
@@ -85,39 +85,42 @@ def register(request):
         )
 
         print("========== DIAGNÓSTICO ==========", flush=True)
-
         print("PK:", progreso.pk, flush=True)
-
         print("Estado adding:", progreso._state.adding, flush=True)
-
         print("Base de datos:", progreso._state.db, flush=True)
-
         print("Modelo:", progreso.__class__, flush=True)
-
         print("=================================", flush=True)
-        # 2. Asignamos la PK mediante el ID conocido del usuario
+        # 3. Crear los mensajes asignando la instancia 'progreso'
+        mensajes_creados = []
         for consejo in CONSEJOS_INICIALES:
-            MensajeJuego.objects.create(
-                progreso_id=usuario.pk,
+            msg = MensajeJuego.objects.create(
+                progreso=progreso,
                 titulo=consejo["titulo"],
                 descripcion=consejo["descripcion"],
                 desbloqueado=True
             )
+            mensajes_creados.append(msg.pk)
 
+        # 4. Crear los aprendizajes asignando la instancia 'progreso'
+        aprendizajes_creados = []
         for tema in APRENDIZAJES_INICIALES:
-            AprendizajeJuego.objects.create(
-                progreso_id=usuario.pk,
+            apj = AprendizajeJuego.objects.create(
+                progreso=progreso,
                 titulo=tema["titulo"],
                 contenido=tema["contenido"],
                 imagen=tema["imagen"],
                 fuente=tema["fuente"],
                 desbloqueado=True
             )
+            aprendizajes_creados.append(apj.pk)
+
+        print(f"Mensajes creados correctamente: {len(mensajes_creados)}", flush=True)
+        print(f"Aprendizajes creados correctamente: {len(aprendizajes_creados)}", flush=True)
 
         return Response({
             'mensaje': 'Usuario creado correctamente',
-            'progresoId': usuario.pk,
-            'consejosIniciales': 3,
+            'progresoId': progreso.pk,
+            'consejosIniciales': len(mensajes_creados),
         }, status=status.HTTP_201_CREATED)
 
     return Response(
