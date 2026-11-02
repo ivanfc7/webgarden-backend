@@ -6,7 +6,6 @@ class AprendizajeJuego(models.Model):
     titulo = models.CharField(max_length=150)
     contenido = models.TextField()
     imagen = models.CharField(max_length=200)
-    video = models.CharField(max_length=200)
     fuente = models.TextField()
     desbloqueado = models.BooleanField(default=False)
 
