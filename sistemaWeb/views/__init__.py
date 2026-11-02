@@ -4,5 +4,3 @@ from .progreso_view import *
 from .aprendizaje_view import *
 from .mensaje_view import *
 from .user_view import *
-from .magic_view import *
-from .token_view import *
