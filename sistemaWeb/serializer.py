@@ -12,11 +12,13 @@ class MensajeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MensajeJuego
         fields = '__all__'
+        read_only_fields = ['progreso']
 
 class AprendizajeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AprendizajeJuego
         fields = '__all__'
+        read_only_fields = ['progreso']
 
 class ProgresoSerializer(serializers.ModelSerializer):
     # Incluir los serializadores anidados utilizando el related_name correspondiente
