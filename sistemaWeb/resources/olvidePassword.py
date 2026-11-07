@@ -17,10 +17,16 @@ DEPLOY_URL = 'https://webgarden.vercel.app'
 @api_view(["POST"])
 def generar_token(request):
     correo = request.data.get("correo")
+    print("Datos recibidos:", request.data)
+    print("Correo recibido:", repr(correo))
+    print("Base de datos:", User.objects.db)
     try:
         user = User.objects.get(email=correo)
-    except:
-        return Response({"error": "Correo no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    except User.DoesNotExist:
+        return Response(
+            {"error": "Correo no encontrado"},
+            status=status.HTTP_404_NOT_FOUND
+        )
     
     # Si se encontro
     uid = urlsafe_base64_encode(force_bytes(user.pk))

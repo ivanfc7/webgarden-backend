@@ -132,7 +132,8 @@ def profile(request):
     nombre = request.user.first_name
     apellidos = request.user.last_name
     correo = request.user.email
-    return Response({"id":elId , "firstName": nombre, "lastName": apellidos, "email": correo},status=status.HTTP_200_OK)
+    username = request.user.username
+    return Response({"id":elId , "firstName": nombre, "lastName": apellidos, "email": correo, "username": username},status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
