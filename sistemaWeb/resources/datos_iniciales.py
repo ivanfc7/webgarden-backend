@@ -17,20 +17,35 @@ APRENDIZAJES_INICIALES = [
     {
         "titulo": "La fotosíntesis en las plantas",
         "imagen": "/img_juego/aprendizaje/fotosintesis.JPG",
-        "contenido": """Todas las plantas realizan un proceso a lo largo de su vida. Este proceso consiste en crear materia orgánica a partir de materia inorgánica.
+        "contenido": """La fotosíntesis es un proceso biológico mediante el cual las plantas elaboran su propio alimento. Para realizarlo, utilizan la energía de la luz solar, el agua que absorben del suelo y el dióxido de carbono (CO₂) que captan del aire.
 
-Es por esta capacidad que el medio ambiente depende de ellas.
+Este proceso ocurre principalmente en las hojas, dentro de unas estructuras celulares llamadas cloroplastos, que contienen clorofila, el pigmento responsable de captar la energía luminosa.
 
-## Fórmula química
+Durante la fotosíntesis, la energía solar permite transformar el agua y el dióxido de carbono en glucosa, una sustancia que la planta utiliza como fuente de energía y para formar nuevos tejidos. Como resultado, también se libera oxígeno a la atmósfera.
 
-- 6 moléculas de agua
-- 6 moléculas de dióxido de carbono
-- Luz solar
+## ¿Qué necesita una planta para realizar la fotosíntesis?
 
-Gracias a los cloroplastos, se transforman en:
+- **Agua (H₂O):** es absorbida por las raíces y transportada hasta las hojas.
+- **Dióxido de carbono (CO₂):** ingresa principalmente a través de pequeños poros de las hojas llamados estomas.
+- **Luz solar:** proporciona la energía necesaria para llevar a cabo el proceso.
+- **Clorofila:** es el pigmento que permite captar la energía de la luz.
 
-- 1 molécula de glucosa (C6H12O6)
-- 6 moléculas de oxígeno (O2)
+## ¿Qué productos se obtienen?
+
+Como resultado de la fotosíntesis, se producen:
+
+- **Glucosa (C₆H₁₂O₆):** es utilizada por la planta para obtener energía, crecer y desarrollar sus estructuras.
+- **Oxígeno (O₂):** se libera al ambiente y contribuye a mantener el equilibrio de los gases en la atmósfera.
+
+## Fórmula química de la fotosíntesis
+
+La ecuación química simplificada que representa este proceso es:
+
+6 CO₂ + 6 H₂O + energía luminosa → C₆H₁₂O₆ + 6 O₂
+
+## ¿Por qué es importante la fotosíntesis?
+
+La fotosíntesis es fundamental para la vida en la Tierra porque permite la producción de materia orgánica que sirve de alimento a numerosos organismos. Además, libera oxígeno y contribuye a regular la concentración de dióxido de carbono en la atmósfera.
 """,
         "fuente": """Resumen en base al Texto: [Ecología Verde: Fotosíntesis Fases e Importancia](https://www.ecologiaverde.com/fotosintesis-que-es-fases-e-importancia-2948.html)
 
